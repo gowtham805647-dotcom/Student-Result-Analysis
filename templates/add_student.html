@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Student</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <h1>📊 Student Result Analysis</h1>
+        <ul>
+            <li><a href="/">Dashboard</a></li>
+            <li><a href="/add">Add Student</a></li>
+            <li><a href="/sorting">Sort Results</a></li>
+            <li><a href="/tree">Tree Analysis</a></li>
+            <li><a href="/analysis">Analysis</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h2>➕ Add New Student</h2>
+        
+        <form class="form-group" id="addForm">
+            <div>
+                <label>Register Number:</label>
+                <input type="text" id="reg_no" required>
+            </div>
+            <div>
+                <label>Student Name:</label>
+                <input type="text" id="name" required>
+            </div>
+            <div>
+                <label>Maths Marks:</label>
+                <input type="number" id="maths" min="0" max="100" required>
+            </div>
+            <div>
+                <label>Science Marks:</label>
+                <input type="number" id="science" min="0" max="100" required>
+            </div>
+            <div>
+                <label>English Marks:</label>
+                <input type="number" id="english" min="0" max="100" required>
+            </div>
+            <button type="submit" class="btn btn-primary">✅ Submit</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('addForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const data = {
+                reg_no: document.getElementById('reg_no').value,
+                name: document.getElementById('name').value,
+                maths: parseInt(document.getElementById('maths').value),
+                science: parseInt(document.getElementById('science').value),
+                english: parseInt(document.getElementById('english').value)
+            };
+            
+            const response = await fetch('/api/add-student', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                alert('✅ Student added successfully!');
+                window.location.href = '/';
+            } else {
+                alert('❌ Error adding student');
+            }
+        });
+    </script>
+</body>
+</html>

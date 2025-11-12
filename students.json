@@ -1,0 +1,37 @@
+[
+  {
+    "reg_no": "001",
+    "name": "Alice Kumar",
+    "maths": 85,
+    "science": 90,
+    "english": 88
+  },
+  {
+    "reg_no": "002",
+    "name": "Bob Singh",
+    "maths": 78,
+    "science": 82,
+    "english": 80
+  },
+  {
+    "reg_no": "003",
+    "name": "Charlie Brown",
+    "maths": 92,
+    "science": 88,
+    "english": 95
+  },
+  {
+    "reg_no": "004",
+    "name": "Diana Patel",
+    "maths": 88,
+    "science": 85,
+    "english": 92
+  },
+  {
+    "reg_no": "005",
+    "name": "Eve Johnson",
+    "maths": 75,
+    "science": 79,
+    "english": 77
+  }
+]

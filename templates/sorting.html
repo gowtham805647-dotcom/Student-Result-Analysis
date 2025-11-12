@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sorting - Student Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <h1>📊 Student Result Analysis</h1>
+        <ul>
+            <li><a href="/">Dashboard</a></li>
+            <li><a href="/add">Add Student</a></li>
+            <li><a href="/sorting">Sort Results</a></li>
+            <li><a href="/tree">Tree Analysis</a></li>
+            <li><a href="/analysis">Analysis</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h2>🔄 Sort Student Results</h2>
+        
+        <div class="sort-controls">
+            <div>
+                <label>Sorting Algorithm:</label>
+                <select id="algorithm">
+                    <option value="bubble">Bubble Sort</option>
+                    <option value="selection">Selection Sort</option>
+                    <option value="insertion">Insertion Sort</option>
+                </select>
+            </div>
+            <div>
+                <label>Sort By:</label>
+                <select id="sortBy">
+                    <option value="total_asc">Total Marks (Ascending)</option>
+                    <option value="total_desc">Total Marks (Descending)</option>
+                    <option value="name">Student Name</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="sortStudents()">🔄 Sort</button>
+        </div>
+
+        <div id="info" class="info-box" style="display:none;"></div>
+
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th>Reg No</th>
+                    <th>Name</th>
+                    <th>Maths</th>
+                    <th>Science</th>
+                    <th>English</th>
+                    <th>Total</th>
+                    <th>Grade</th>
+                </tr>
+            </thead>
+            <tbody id="results-tbody">
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function getGrade(total) {
+            if (total >= 90) return 'A';
+            else if (total >= 80) return 'B';
+            else if (total >= 70) return 'C';
+            else if (total >= 60) return 'D';
+            else return 'F';
+        }
+
+        async function sortStudents() {
+            const algorithm = document.getElementById('algorithm').value;
+            const sortBy = document.getElementById('sortBy').value;
+
+            const response = await fetch('/api/sort', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({type: algorithm, sort_by: sortBy})
+            });
+
+            const data = await response.json();
+            document.getElementById('info').innerHTML = 
+                `<strong>Algorithm:</strong> ${data.algorithm} | <strong>Time:</strong> ${data.time}`;
+            document.getElementById('info').style.display = 'block';
+
+            const tbody = document.getElementById('results-tbody');
+            tbody.innerHTML = '';
+            
+            data.students.forEach(s => {
+                const total = s.maths + s.science + s.english;
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${s.reg_no}</td>
+                        <td>${s.name}</td>
+                        <td>${s.maths}</td>
+                        <td>${s.science}</td>
+                        <td>${s.english}</td>
+                        <td>${total}</td>
+                        <td>${getGrade(total)}</td>
+                    </tr>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>

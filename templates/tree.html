@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tree Visualization</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <h1>📊 Student Result Analysis</h1>
+        <ul>
+            <li><a href="/">Dashboard</a></li>
+            <li><a href="/add">Add Student</a></li>
+            <li><a href="/sorting">Sort Results</a></li>
+            <li><a href="/tree">Tree Analysis</a></li>
+            <li><a href="/analysis">Analysis</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h2>🌳 Binary Search Tree Visualization</h2>
+        
+        <canvas id="treeCanvas" width="800" height="400"></canvas>
+
+        <div class="traversal-buttons">
+            <button class="btn btn-primary" onclick="showTraversal('inorder')">📍 Inorder</button>
+            <button class="btn btn-secondary" onclick="showTraversal('preorder')">📍 Preorder</button>
+            <button class="btn btn-secondary" onclick="showTraversal('postorder')">📍 Postorder</button>
+        </div>
+
+        <div id="traversal-result" class="info-box" style="display:none;"></div>
+    </div>
+
+    <script>
+        let treeData;
+
+        async function loadTree() {
+            const response = await fetch('/api/tree-data');
+            treeData = await response.json();
+            drawTree(treeData.tree);
+        }
+
+        function drawTree(node, x = 400, y = 40, offsetX = 100) {
+            if (!node) return;
+
+            const canvas = document.getElementById('treeCanvas');
+            const ctx = canvas.getContext('2d');
+
+            if (node.left) {
+                ctx.strokeStyle = '#666';
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x - offsetX, y + 60);
+                ctx.stroke();
+                drawTree(node.left, x - offsetX, y + 60, offsetX / 2);
+            }
+
+            if (node.right) {
+                ctx.strokeStyle = '#666';
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x + offsetX, y + 60);
+                ctx.stroke();
+                drawTree(node.right, x + offsetX, y + 60, offsetX / 2);
+            }
+
+            ctx.fillStyle = '#FF6B6B';
+            ctx.beginPath();
+            ctx.arc(x, y, 25, 0, 2 * Math.PI);
+            ctx.fill();
+
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(node.name.substring(0, 8), x, y - 5);
+            ctx.fillText(node.marks, x, y + 8);
+        }
+
+        function showTraversal(type) {
+            const result = treeData[type];
+            document.getElementById('traversal-result').innerHTML = 
+                `<strong>${type.toUpperCase()} Traversal:</strong> ${result.join(' → ')}`;
+            document.getElementById('traversal-result').style.display = 'block';
+        }
+
+        loadTree();
+    </script>
+</body>
+</html>

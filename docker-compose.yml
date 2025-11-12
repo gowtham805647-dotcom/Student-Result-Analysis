@@ -1,0 +1,13 @@
+services:
+  student-analysis:
+    build: .
+    container_name: student-result-app
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./students.json:/app/students.json
+      - ./data:/app/data
+    environment:
+      - FLASK_ENV=development
+      - FLASK_APP=app.py
+    restart: unless-stopped
