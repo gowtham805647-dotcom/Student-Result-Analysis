@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - Student Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <h1>📊 Student Result Analysis</h1>
+        <ul>
+            <li><a href="/">Dashboard</a></li>
+            <li><a href="/add">Add Student</a></li>
+            <li><a href="/sorting">Sort Results</a></li>
+            <li><a href="/tree">Tree Analysis</a></li>
+            <li><a href="/analysis">Analysis</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h2>🏠 Dashboard</h2>
+        
+        <div class="summary">
+            <div class="summary-card">
+                <h3>🏆 Topper</h3>
+                <p id="topper">Loading...</p>
+            </div>
+            <div class="summary-card">
+                <h3>📊 Class Average</h3>
+                <p id="average">Loading...</p>
+            </div>
+            <div class="summary-card">
+                <h3>😓 Lowest Scorer</h3>
+                <p id="lowest">Loading...</p>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <a href="/add" class="btn btn-primary">➕ Add Student</a>
+            <a href="/sorting" class="btn btn-secondary">🔄 Sort Results</a>
+            <a href="/tree" class="btn btn-secondary">🌳 Tree Analysis</a>
+            <a href="/analysis" class="btn btn-secondary">📈 View Report</a>
+        </div>
+
+        <h3>📋 Student Results</h3>
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th>Reg No</th>
+                    <th>Name</th>
+                    <th>Maths</th>
+                    <th>Science</th>
+                    <th>English</th>
+                    <th>Total</th>
+                    <th>Grade</th>
+                </tr>
+            </thead>
+            <tbody id="results-tbody">
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.reg_no }}</td>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.maths }}</td>
+                    <td>{{ student.science }}</td>
+                    <td>{{ student.english }}</td>
+                    <td>{{ student.maths + student.science + student.english }}</td>
+                    <td>
+                        {% set total = student.maths + student.science + student.english %}
+                        {% if total >= 90 %}A{% elif total >= 80 %}B{% elif total >= 70 %}C{% elif total >= 60 %}D{% else %}F{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        fetch('/api/analysis').then(r => r.json()).then(data => {
+            document.getElementById('topper').textContent = data.topper;
+            document.getElementById('average').textContent = data.average;
+            document.getElementById('lowest').textContent = data.lowest;
+        });
+    </script>
+</body>
+</html>

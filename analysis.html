@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Analysis - Student Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>📊 Student Result Analysis</h1>
+        <ul>
+            <li><a href="/">Dashboard</a></li>
+            <li><a href="/add">Add Student</a></li>
+            <li><a href="/sorting">Sort Results</a></li>
+            <li><a href="/tree">Tree Analysis</a></li>
+            <li><a href="/analysis">Analysis</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h2>📈 Result Analysis</h2>
+        
+        <div class="analysis-grid">
+            <div class="analysis-card">
+                <h3>📊 Class Average</h3>
+                <p id="avg" style="font-size: 2em; color: #4CAF50;">-</p>
+            </div>
+            <div class="analysis-card">
+                <h3>✅ Above Average</h3>
+                <p id="above" style="font-size: 2em; color: #2196F3;">-</p>
+            </div>
+            <div class="analysis-card">
+                <h3>❌ Below Average</h3>
+                <p id="below" style="font-size: 2em; color: #FF6B6B;">-</p>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3>🎯 Top 3 Performers</h3>
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Name</th>
+                        <th>Total Marks</th>
+                        <th>Grade</th>
+                    </tr>
+                </thead>
+                <tbody id="top3"></tbody>
+            </table>
+        </div>
+
+        <div class="chart-container">
+            <h3>📊 Grade Distribution</h3>
+            <canvas id="gradeChart"></canvas>
+        </div>
+
+        <a href="/api/download-report" class="btn btn-primary" style="margin-top: 20px;">📥 Download Report</a>
+    </div>
+
+    <script>
+        async function loadAnalysis() {
+            const response = await fetch('/api/analysis');
+            const data = await response.json();
+
+            document.getElementById('avg').textContent = data.average;
+            document.getElementById('above').textContent = data.above_average;
+            document.getElementById('below').textContent = data.below_average;
+
+            const top3Html = data.top_3.map((s, i) => `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td>${s.name}</td>
+                    <td>${s.total}</td>
+                    <td>${s.grade}</td>
+                </tr>
+            `).join('');
+            document.getElementById('top3').innerHTML = top3Html;
+
+            const ctx = document.getElementById('gradeChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['A', 'B', 'C', 'D', 'F'],
+                    datasets: [{
+                        label: 'Number of Students',
+                        data: [data.grade_distribution.A, data.grade_distribution.B, 
+                               data.grade_distribution.C, data.grade_distribution.D, 
+                               data.grade_distribution.F],
+                        backgroundColor: ['#4CAF50', '#2196F3', '#FF9800', '#FF6B6B', '#9C27B0']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {beginAtZero: true}
+                    }
+                }
+            });
+        }
+
+        loadAnalysis();
+    </script>
+</body>
+</html>
